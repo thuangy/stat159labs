@@ -1,4 +1,4 @@
-# 01-kmeans-app
+# advertising scatterplots
 
 palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
   "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
@@ -27,7 +27,6 @@ server <- function(input, output) {
     plot(selectedData(),
          pch = 20, cex = 2)
   })
-
 }
 
 shinyApp(ui = ui, server = server)
