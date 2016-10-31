@@ -1,0 +1,96 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{url}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+\usepackage{breakurl}
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figure/minimal-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+@
+
+\title{Simple Linear Regression Analysis}
+
+\author{Tina Huang}
+
+\maketitle
+
+\begin{abstract}
+This report will reproduce the findings concerning the relationship between TV Budget and Sales in the Advertising.csv dataset, from Chapter 3.1 of an \textit{An Introduction to Statistical Learning} by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. 
+\end{abstract}
+
+\section{Introduction}
+
+The purpose of this report is to improve overall sales by determining whether or not sales can be predicted by TV budget. To do this, the relationship between these two variables will be explored through simple linear regression. 
+
+\section{Data}
+
+The Advertising.csv dataset contains the TV, Radio, and Newspaper budgets in thousands of dollars, as well as sales in thousands of units, for 200 different markets. In this report, only the TV budgets and sales will be looked at from this dataset. 
+
+\section{Methodology}
+
+We assume a roughly linear relationship betwen Sales and TV Budget for the Advertising dataset, and so will use a simple linear model to illustrate this relationship:
+
+\begin{equation}
+\operatorname{Sales} = \beta_0 + \beta_1 \operatorname{TV}
+\end{equation}
+
+$\beta_0$ and $\beta_1$ represent the intercept and slope of the equation, respectively. To estimate these unknown coefficients, we can minimize the least squares criterion. 
+
+First the summaries and histograms for the distributions of TV budget and Sales are looked at individually. Then the coefficients are estimated, the standard error of these estimates is calculated, and then a t-test is performed to determine the significance of these values. In addition, the residual standard error and R-squared values can be calculated to determine how well the model fits the data. 
+
+\section{Results}
+
+
+<<loading-packages, echo=FALSE>>=
+library(pander)
+library(xtable)
+load("regression.Rdata")
+@
+
+<<regression-summary, echo=FALSE, results="asis">>=
+xtable(reg_summary, caption="Assessing the Fit of the Sales Onto TV")
+@
+
+The regression coefficients are estimated in Table 1 above, and we can see that $\beta_0$ 
+and $\beta_1$ are estimated to be \Sexpr{reg_summary$coef[, "Estimate"]} respectively. This means for an increase of \$1000 in TV budget, we will see about an additional 47.5 units sold. We can also see that the p-value from performing the t-test is extremely low, indicating that this is a statistically significant value and that there is strong evidence that there is a relationship between TV Budget and Sales. 
+
+<<rsquared-rse, echo=FALSE, results="asis">>=
+df = t(data.frame(c(length(reg_summary$residuals), reg_summary$sigma, reg_summary$r.squared, reg_summary$adj.r.squared)))
+colnames(df) = c("Observations", "Residual Std. Error", "R^2", "Adjusted R^2")
+rownames(df) = NULL
+xtable(df, caption="Assessing the Fit of the Sales Onto Radio Model")
+@
+
+Looking at Table 2, we see that the model has an R-squared value of \Sexpr{reg_summary$r.squared}, which indicates a majority of the variability in Sales can be explained by TV Budget, and that the relationship between TV Budget and Sales is roughly linear. The residual standard error(RSE) value of \Sexpr{reg_summary$sigma} also supports these statements, as it is greater than 1. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1\textwidth]{scatterplot-tv-sales.png}
+\caption{\label{fig:plot}Scatterplot of Sales Vs TV Budget with Fitted Regression Line}
+\end{figure}
+
+Looking at Figure 1, we can see that the fitted regression line roughly encompasses most of the data points, however for low TV budgets, the line does not fit the data as well. The values also tend to fan out as TV budget increases, so while the relationship between the two variables seems to be approximately linear, there may be other non-linear models that could provide a better fit. 
+
+\section{Conclusions}
+
+Based on our results, we see a very low p-value after performing a t-test to determine whether there's a relationship between Sales and TV Budget, which indicates that there is strong evidence that there is a relationship. The R-squared and RSE values indicate that there is a roughly linear relationship between these two variables. The scatterplot supports this claim, also giving us additional information that the fitted model is not as accurate for low TV budgets. Therefore we can see that we can use the model to roughly predict Sales based on TV Budget, as long as TV Budget is above a certain value (approximately at least 10 thousand dollars). 
+
+\end{document}
